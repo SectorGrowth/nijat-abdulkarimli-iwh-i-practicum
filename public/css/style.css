@@ -56,3 +56,34 @@ input[type="submit"] {
     padding: .375rem 1rem;
     margin-top: 10px;
 }
+
+.add-link {
+    display: inline-block;
+    margin: 2rem;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #1a0dab;
+    text-decoration: underline;
+}
+
+.cobj-table {
+    margin: 1rem 2rem;
+    border-collapse: collapse;
+    font-size: 1.5rem;
+}
+
+.cobj-table th,
+.cobj-table td {
+    border: 1px solid #000;
+    padding: 0.5rem 1rem;
+}
+
+.cobj-table th {
+    background-color: #f7c6cf;
+    font-weight: bold;
+    text-align: center;
+}
+
+.cobj-table td {
+    text-align: left;
+}

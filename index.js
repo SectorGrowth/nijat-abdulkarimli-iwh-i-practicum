@@ -10,17 +10,63 @@ app.use(express.json());
 // * Please DO NOT INCLUDE the private app access token in your repo. Don't do this practicum in your normal account.
 const PRIVATE_APP_ACCESS = '';
 
-// TODO: ROUTE 1 - Create a new app.get route for the homepage to call your custom object data. Pass this data along to the front-end and create a new pug template in the views folder.
+const CUSTOM_OBJECT_ID = '2-62208545';
+const CUSTOM_OBJECT_URL = `https://api.hubapi.com/crm/v3/objects/${CUSTOM_OBJECT_ID}`;
 
-// * Code for Route 1 goes here
+const headers = {
+    Authorization: `Bearer ${PRIVATE_APP_ACCESS}`,
+    'Content-Type': 'application/json'
+};
+
+// TODO: ROUTE 1 - Create a new app.get route for the homepage to call your custom object data. Pass this data along to the front-end and create a new pug template in the views folder.
+app.get('/', async (req, res) => {
+    const params = { properties: 'name,console,genre' };
+    try {
+        const resp = await axios.get(CUSTOM_OBJECT_URL, { headers, params });
+        const data = resp.data.results;
+        res.render('homepage', { title: 'Video Games | HubSpot Custom Object', data });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error fetching custom object data');
+    }
+});
 
 // TODO: ROUTE 2 - Create a new app.get route for the form to create or update new custom object data. Send this data along in the next route.
-
-// * Code for Route 2 goes here
+app.get('/update-cobj', async (req, res) => {
+    const consolePropertyUrl = `https://api.hubapi.com/crm/v3/properties/${CUSTOM_OBJECT_ID}/console`;
+    try {
+        const resp = await axios.get(consolePropertyUrl, { headers });
+        console.log('Console property response:', JSON.stringify(resp.data, null, 2));
+        const consoleOptions = resp.data.options || [];
+        console.log('Parsed consoleOptions:', consoleOptions);
+        res.render('updates', {
+            title: 'Update Custom Object Form | Integrating With HubSpot I Practicum',
+            consoleOptions
+        });
+    } catch (error) {
+        console.error('Error fetching console property:', error.response ? error.response.data : error.message);
+        res.status(500).send('Error fetching console property options');
+    }
+});
 
 // TODO: ROUTE 3 - Create a new app.post route for the custom objects form to create or update your custom object data. Once executed, redirect the user to the homepage.
+app.post('/update-cobj', async (req, res) => {
+    const newRecord = {
+        properties: {
+            name: req.body.name,
+            console: req.body.console,
+            genre: req.body.genre
+        }
+    };
 
-// * Code for Route 3 goes here
+    try {
+        await axios.post(CUSTOM_OBJECT_URL, newRecord, { headers });
+        res.redirect('/');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error creating custom object record');
+    }
+});
 
 /** 
 * * This is sample code to give you a reference for how you should structure your calls. 
